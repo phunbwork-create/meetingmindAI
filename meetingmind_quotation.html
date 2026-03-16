@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MeetingMind – Báo giá Dịch vụ | Flexi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e293b; --accent: #7c3aed; --accent-light: #f5f3ff;
+            --green: #16a34a; --green-light: #f0fdf4;
+            --amber: #d97706; --amber-light: #fffbeb;
+            --red: #dc2626; --blue: #2563eb; --blue-light: #eff6ff;
+            --purple: #7c3aed;
+            --text: #334155; --text-light: #64748b;
+            --bg: #f1f5f9; --surface: #ffffff; --surface-2: #f8fafc;
+            --border: #e2e8f0; --shadow: 0 1px 3px rgba(0,0,0,0.07);
+            --th-bg: #f8fafc; --th-color: #1e293b; --td-border: #f1f5f9;
+            --total-bg: #f5f3ff; --total-color: #6d28d9; --total-border: #ddd6fe;
+        }
+        [data-theme="dark"] {
+            --primary: #e2e8f0; --accent: #a78bfa; --accent-light: #2e1065;
+            --green: #4ade80; --green-light: #052e16;
+            --amber: #fbbf24; --amber-light: #451a03;
+            --red: #f87171; --blue: #60a5fa; --blue-light: #1e3a5f;
+            --text: #cbd5e1; --text-light: #94a3b8;
+            --bg: #0f172a; --surface: #1e293b; --surface-2: #162032;
+            --border: #334155; --shadow: 0 1px 3px rgba(0,0,0,0.4);
+            --th-bg: #162032; --th-color: #e2e8f0; --td-border: #1e293b;
+            --total-bg: #2e1065; --total-color: #c4b5fd; --total-border: #4c1d95;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); padding: 30px 20px 60px; line-height: 1.6; transition: background 0.3s, color 0.3s; }
+        .container { max-width: 980px; margin: 0 auto; }
+
+        /* THEME TOGGLE */
+        .theme-bar { display: flex; justify-content: flex-end; margin-bottom: 16px; }
+        .theme-toggle { display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 6px 14px; cursor: pointer; font-family: 'Outfit', sans-serif; font-size: 0.85rem; font-weight: 500; color: var(--text); box-shadow: var(--shadow); transition: all 0.2s; user-select: none; }
+        .theme-toggle:hover { opacity: 0.8; }
+        .toggle-track { width: 38px; height: 20px; background: var(--border); border-radius: 999px; position: relative; transition: background 0.3s; flex-shrink: 0; }
+        [data-theme="dark"] .toggle-track { background: var(--accent); }
+        .toggle-thumb { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; background: white; border-radius: 50%; transition: left 0.3s; }
+        [data-theme="dark"] .toggle-thumb { left: 20px; }
+
+        /* HEADER */
+        .doc-header { background: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 50%, #7c3aed 100%); color: white; border-radius: 20px; padding: 50px 60px; margin-bottom: 24px; position: relative; overflow: hidden; }
+        .doc-header::before { content: ''; position: absolute; top: -60px; right: -60px; width: 250px; height: 250px; background: rgba(167,139,250,0.2); border-radius: 50%; }
+        .doc-header::after { content: ''; position: absolute; bottom: -80px; left: -40px; width: 180px; height: 180px; background: rgba(167,139,250,0.1); border-radius: 50%; }
+        .doc-header h1 { font-size: 2.2rem; font-weight: 700; margin-bottom: 6px; position: relative; z-index: 1; }
+        .doc-header .emoji-icon { font-size: 2.8rem; display: block; margin-bottom: 12px; position: relative; z-index: 1; }
+        .doc-header .subtitle { font-size: 1rem; opacity: 0.85; position: relative; z-index: 1; }
+        .meta-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; position: relative; z-index: 1; }
+        .meta-tag { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 20px; padding: 4px 14px; font-size: 0.82rem; backdrop-filter: blur(4px); }
+        .flexi-badge { position: absolute; top: 24px; right: 30px; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.6; z-index: 1; }
+
+        /* CARD */
+        .card { background: var(--surface); border-radius: 16px; padding: 36px 40px; margin-bottom: 24px; box-shadow: var(--shadow); border: 1px solid var(--border); transition: background 0.3s, border-color 0.3s; }
+        .section-title { font-size: 1.2rem; font-weight: 700; color: var(--primary); margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
+        .section-title .num { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 700; flex-shrink: 0; color: white; }
+        .num-fe { background: #2563eb; }
+        .num-be { background: #16a34a; }
+        .num-design { background: #d97706; }
+        .num-token { background: #dc2626; }
+        .num-total { background: #7c3aed; }
+        .num-mono { background: #0891b2; }
+        .num-next { background: #475569; }
+
+        /* TABLES */
+        table { width: 100%; border-collapse: collapse; font-size: 0.93rem; }
+        thead th { background: var(--th-bg); color: var(--th-color); padding: 12px 16px; text-align: left; font-weight: 600; border-bottom: 2px solid var(--border); font-size: 0.83rem; text-transform: uppercase; letter-spacing: 0.03em; }
+        thead th:last-child { text-align: right; }
+        td { padding: 12px 16px; border-bottom: 1px solid var(--td-border); vertical-align: top; color: var(--text); transition: color 0.3s; }
+        td:last-child { text-align: right; font-variant-numeric: tabular-nums; font-weight: 500; }
+        tr:last-child td { border-bottom: none; }
+        .total-row td { background: var(--total-bg); font-weight: 700; color: var(--total-color); border-top: 2px solid var(--total-border); }
+        .subtotal-row td { background: var(--surface-2); font-weight: 600; color: var(--primary); font-size: 0.92rem; }
+        .section-group td { background: var(--surface-2); font-weight: 600; color: var(--text-light); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
+        .tag { display: inline-block; border-radius: 6px; padding: 2px 8px; font-size: 0.72rem; font-weight: 600; margin-left: 6px; }
+        .tag-fe { background: #dbeafe; color: #1d4ed8; }
+        .tag-be { background: #dcfce7; color: #15803d; }
+        .tag-design { background: #fef3c7; color: #b45309; }
+        .tag-token { background: #fee2e2; color: #b91c1c; }
+        [data-theme="dark"] .tag-fe { background: #1e3a5f; color: #93c5fd; }
+        [data-theme="dark"] .tag-be { background: #052e16; color: #86efac; }
+        [data-theme="dark"] .tag-design { background: #451a03; color: #fcd34d; }
+        [data-theme="dark"] .tag-token { background: #450a0a; color: #fca5a5; }
+
+        /* ALERTS */
+        .alert { border-radius: 10px; padding: 14px 18px; margin-top: 20px; font-size: 0.88rem; display: flex; gap: 12px; align-items: flex-start; transition: background 0.3s; }
+        .alert-icon { font-size: 1.1rem; flex-shrink: 0; }
+        .alert.tip { background: var(--green-light); border-left: 4px solid var(--green); }
+        .alert.important { background: var(--amber-light); border-left: 4px solid var(--amber); }
+        .alert.note { background: var(--accent-light); border-left: 4px solid var(--accent); }
+        .alert.info { background: var(--blue-light); border-left: 4px solid var(--blue); }
+        .alert div { color: var(--text); }
+        .alert strong { color: var(--primary); }
+
+        /* SUBHEADING */
+        .subheading { font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-light); margin: 28px 0 14px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+
+        /* MONETIZATION CARDS */
+        .mono-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
+        @media (max-width: 680px) { .mono-grid { grid-template-columns: 1fr; } }
+        .mono-card { border-radius: 12px; padding: 22px; border: 1px solid var(--border); transition: all 0.2s; }
+        .mono-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); border-color: var(--accent); }
+        .mono-card .mono-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-light); margin-bottom: 6px; }
+        .mono-card h3 { font-size: 1rem; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
+        .mono-card p { font-size: 0.84rem; color: var(--text-light); line-height: 1.6; }
+        .mono-card .mono-price { margin-top: 12px; font-size: 0.88rem; font-weight: 700; color: var(--accent); }
+        .mono-badge { display: inline-block; border-radius: 20px; padding: 3px 10px; font-size: 0.72rem; font-weight: 600; margin-bottom: 10px; }
+        .badge-recommend { background: #fef3c7; color: #b45309; }
+        .badge-passive { background: #f0fdf4; color: #15803d; }
+        .badge-b2b { background: #eff6ff; color: #1d4ed8; }
+        .badge-addon { background: #f5f3ff; color: #6d28d9; }
+        [data-theme="dark"] .badge-recommend { background: #451a03; color: #fcd34d; }
+        [data-theme="dark"] .badge-passive { background: #052e16; color: #86efac; }
+        [data-theme="dark"] .badge-b2b { background: #1e3a5f; color: #93c5fd; }
+        [data-theme="dark"] .badge-addon { background: #2e1065; color: #c4b5fd; }
+
+        /* TOKEN DETAIL */
+        .token-scenarios { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 16px; }
+        @media (max-width: 768px) { .token-scenarios { grid-template-columns: 1fr; } }
+        .token-sc { border-radius: 10px; padding: 16px; text-align: center; }
+        .token-sc.light-use { background: #f0fdf4; border: 1px solid #86efac; }
+        .token-sc.med-use { background: #fef3c7; border: 1px solid #fcd34d; }
+        .token-sc.heavy-use { background: #fee2e2; border: 1px solid #fca5a5; }
+        [data-theme="dark"] .token-sc.light-use { background: #052e16; border-color: #166534; }
+        [data-theme="dark"] .token-sc.med-use { background: #451a03; border-color: #92400e; }
+        [data-theme="dark"] .token-sc.heavy-use { background: #450a0a; border-color: #991b1b; }
+        .token-sc .sc-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+        .token-sc.light-use .sc-label { color: #16a34a; }
+        .token-sc.med-use .sc-label { color: #d97706; }
+        .token-sc.heavy-use .sc-label { color: #dc2626; }
+        .token-sc .sc-amount { font-size: 1.4rem; font-weight: 700; color: var(--primary); }
+        .token-sc .sc-desc { font-size: 0.75rem; color: var(--text-light); margin-top: 4px; }
+
+        /* NEXT STEPS */
+        .step-item { display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
+        .step-item:last-child { border-bottom: none; }
+        .step-num { width: 36px; height: 36px; background: var(--accent); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; flex-shrink: 0; }
+        .step-body { flex: 1; }
+        .step-body strong { display: block; font-size: 0.96rem; margin-bottom: 3px; color: var(--primary); }
+        .step-body span { font-size: 0.85rem; color: var(--text-light); }
+        .step-badge { display: inline-block; background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; padding: 3px 10px; font-size: 0.78rem; color: var(--text); margin-top: 4px; }
+
+        /* GRAND TOTAL */
+        .grand-total-box { border-radius: 16px; padding: 28px 32px; background: linear-gradient(135deg, #4c1d95, #7c3aed); color: white; margin-top: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+        .grand-total-box .gt-label { font-size: 0.9rem; opacity: 0.85; margin-bottom: 4px; }
+        .grand-total-box .gt-amount { font-size: 2rem; font-weight: 700; }
+        .grand-total-box .gt-sub { font-size: 0.8rem; opacity: 0.7; margin-top: 4px; }
+        .grand-total-box .gt-right { text-align: right; }
+
+        /* FOOTER */
+        footer { text-align: center; color: var(--text-light); font-size: 0.82rem; margin-top: 40px; padding-top: 20px; border-top: 1px dashed var(--border); }
+        .flexi-logo { font-weight: 700; font-size: 0.9rem; color: var(--accent); letter-spacing: 0.05em; }
+
+        @media (max-width: 600px) { .doc-header { padding: 36px 24px; } .card { padding: 24px 20px; } .doc-header h1 { font-size: 1.6rem; } }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- THEME TOGGLE -->
+    <div class="theme-bar">
+        <button class="theme-toggle" onclick="toggleTheme()">
+            <span id="themeIcon">☀️</span>
+            <span id="themeLabel">Light</span>
+            <div class="toggle-track"><div class="toggle-thumb"></div></div>
+        </button>
+    </div>
+
+    <!-- HEADER -->
+    <div class="doc-header">
+        <span class="flexi-badge">Flexi · AG Team</span>
+        <span class="emoji-icon">🎙️</span>
+        <h1>MeetingMind – Báo giá Dịch vụ</h1>
+        <p class="subtitle">AI Meeting Analyzer · Phân tích cuộc họp thông minh theo phong cách quản trị dự án</p>
+        <div class="meta-tags">
+            <span class="meta-tag">📅 Tháng 3/2026</span>
+            <span class="meta-tag">💰 Đơn vị: VNĐ (chưa VAT 10%)</span>
+            <span class="meta-tag">🤖 AI Provider: Google Gemini 2.5</span>
+            <span class="meta-tag">⚠️ Gói MVP – Có thể mở rộng thêm</span>
+        </div>
+    </div>
+
+    <!-- ===== SECTION 1: FRONTEND ===== -->
+    <div class="card">
+        <div class="section-title">
+            <span class="num num-fe">FE</span>
+            Frontend Development
+            <em style="font-weight:400;font-size:0.82rem;color:var(--text-light)">(Phát triển một lần)</em>
+        </div>
+        <table>
+            <thead>
+                <tr><th style="width:45px">STT</th><th>Hạng mục</th><th>Mô tả</th><th>VNĐ</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>01</td>
+                    <td><strong>UI Foundation & Design System</strong><span class="tag tag-fe">FE</span></td>
+                    <td>Dark glassmorphism theme, CSS variables, responsive grid, typography, color palette</td>
+                    <td>800.000</td>
+                </tr>
+                <tr>
+                    <td>02</td>
+                    <td><strong>Input Module</strong><span class="tag tag-fe">FE</span></td>
+                    <td>3 tab input: Văn bản, Giọng nói (Web Speech API), Upload File (drag & drop, file info). Ngôn ngữ + context input</td>
+                    <td>1.200.000</td>
+                </tr>
+                <tr>
+                    <td>03</td>
+                    <td><strong>Result Dashboard</strong><span class="tag tag-fe">FE</span></td>
+                    <td>4 tab kết quả: Người nói (timeline bars), Chủ đề, Tóm tắt PM, Hành động. Speaker timeline, topic chips, action cards (agreed/suggested)</td>
+                    <td>1.500.000</td>
+                </tr>
+                <tr>
+                    <td>04</td>
+                    <td><strong>Settings Modal & API Key Manager</strong><span class="tag tag-fe">FE</span></td>
+                    <td>Provider tabs (OpenAI / Gemini), secure localStorage, toggle show/hide key, demo mode</td>
+                    <td>600.000</td>
+                </tr>
+                <tr>
+                    <td>05</td>
+                    <td><strong>History & Export</strong><span class="tag tag-fe">FE</span></td>
+                    <td>Lịch sử 20 phân tích, lưu localStorage. Export: Copy, Markdown download, Print/PDF</td>
+                    <td>500.000</td>
+                </tr>
+                <tr>
+                    <td>06</td>
+                    <td><strong>Loading Overlay & Toast System</strong><span class="tag tag-fe">FE</span></td>
+                    <td>Animated progress bar, step messages, toast notifications (success/error)</td>
+                    <td>400.000</td>
+                </tr>
+                <tr class="total-row">
+                    <td colspan="3">🎨 TỔNG FRONTEND (chưa VAT)</td>
+                    <td>5.000.000</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="alert note">
+            <span class="alert-icon">💡</span>
+            <div>Frontend là <strong>pure HTML/JS/CSS</strong> — không cần framework, chạy trực tiếp qua file:// hoặc nginx. Chi phí bảo trì thấp, deploy siêu nhẹ (chỉ cần nginx:alpine Docker).</div>
+        </div>
+    </div>
+
+    <!-- ===== SECTION 2: BACKEND / AI INTEGRATION ===== -->
+    <div class="card">
+        <div class="section-title">
+            <span class="num num-be">BE</span>
+            Backend & AI Integration
+            <em style="font-weight:400;font-size:0.82rem;color:var(--text-light)">(Phát triển một lần)</em>
+        </div>
+        <table>
+            <thead>
+                <tr><th style="width:45px">STT</th><th>Hạng mục</th><th>Mô tả</th><th>VNĐ</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>01</td>
+                    <td><strong>AI Provider Integration – Gemini</strong><span class="tag tag-be">BE</span></td>
+                    <td>Gemini API client, geminiAnalyzeAudio (transcribe + analyze trong 1 call), geminiAnalyzeText. JSON schema validation, error handling</td>
+                    <td>3.000.000</td>
+                </tr>
+                <tr>
+                    <td>02</td>
+                    <td><strong>Gemini File API – Large File Upload</strong><span class="tag tag-be">BE</span></td>
+                    <td>Resumable upload protocol, XHR progress tracking, file status polling (ACTIVE state), hỗ trợ file tới 2GB</td>
+                    <td>2.000.000</td>
+                </tr>
+                <tr>
+                    <td>03</td>
+                    <td><strong>AI Provider Integration – OpenAI</strong><span class="tag tag-be">BE</span></td>
+                    <td>Whisper API (transcription + timestamp segments), GPT-4o (analysis). Dual-provider routing logic</td>
+                    <td>2.000.000</td>
+                </tr>
+                <tr>
+                    <td>04</td>
+                    <td><strong>Prompt Engineering & JSON Schema</strong><span class="tag tag-be">BE</span></td>
+                    <td>System prompt cho phân tích PM, schema speakers/topics/pmSummary/actions, xử lý agreed vs suggested, Vietnamese output</td>
+                    <td>1.500.000</td>
+                </tr>
+                <tr>
+                    <td>05</td>
+                    <td><strong>SRT / Text Parser</strong><span class="tag tag-be">BE</span></td>
+                    <td>Parser file .SRT (phụ đề), .txt, .md với timestamp extraction</td>
+                    <td>500.000</td>
+                </tr>
+                <tr>
+                    <td>06</td>
+                    <td><strong>Deploy & DevOps</strong><span class="tag tag-be">BE</span></td>
+                    <td>Dockerfile (nginx:alpine), git workflow, docker run script, server config. Hiện deploy tại server 84 port 8092</td>
+                    <td>1.000.000</td>
+                </tr>
+                <tr class="total-row">
+                    <td colspan="3">⚙️ TỔNG BACKEND & AI INTEGRATION (chưa VAT)</td>
+                    <td>10.000.000</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="alert tip">
+            <span class="alert-icon">✅</span>
+            <div><strong>Lưu ý kiến trúc:</strong> Hiện tại app là <strong>client-side only</strong> — API key lưu localStorage, gọi AI trực tiếp từ browser. Nếu cần backend thật (user auth, key quản lý tập trung, billing), chi phí BE tăng thêm 15–25tr cho Node.js server + DB.</div>
+        </div>
+    </div>
+
+    <!-- ===== SECTION 3: DESIGN ===== -->
+    <div class="card">
+        <div class="section-title">
+            <span class="num num-design">DE</span>
+            Design & UX
+            <em style="font-weight:400;font-size:0.82rem;color:var(--text-light)">(Phát triển một lần)</em>
+        </div>
+        <table>
+            <thead>
+                <tr><th style="width:45px">STT</th><th>Hạng mục</th><th>Mô tả</th><th>VNĐ</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>01</td>
+                    <td><strong>Brand Identity & Visual Language</strong><span class="tag tag-design">Design</span></td>
+                    <td>Logo concept (🎙️ + AI), color palette (dark purple glassmorphism), typography (Outfit font), icon system</td>
+                    <td>800.000</td>
+                </tr>
+                <tr>
+                    <td>02</td>
+                    <td><strong>UI/UX Wireframe & Prototype</strong><span class="tag tag-design">Design</span></td>
+                    <td>Wireframe toàn bộ màn hình (Figma hoặc tương đương), user flow, interactive prototype</td>
+                    <td>1.800.000</td>
+                </tr>
+                <tr>
+                    <td>03</td>
+                    <td><strong>Component Design System</strong><span class="tag tag-design">Design</span></td>
+                    <td>Design tokens (CSS vars), speaker color palette (8 màu), cards, badges, chips, timelines, modals</td>
+                    <td>1.200.000</td>
+                </tr>
+                <tr>
+                    <td>04</td>
+                    <td><strong>Micro-animations & Interactions</strong><span class="tag tag-design">Design</span></td>
+                    <td>Voice waveform animation, loading overlay with progress, pulse effects, hover transitions, toast animations</td>
+                    <td>700.000</td>
+                </tr>
+                <tr>
+                    <td>05</td>
+                    <td><strong>Responsive & Print Design</strong><span class="tag tag-design">Design</span></td>
+                    <td>Responsive layout (mobile/tablet), print-specific CSS (hide UI, preserve content), PDF export styling</td>
+                    <td>500.000</td>
+                </tr>
+                <tr class="total-row">
+                    <td colspan="3">🎨 TỔNG DESIGN (chưa VAT)</td>
+                    <td>5.000.000</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ===== SECTION 4: AI TOKEN COSTS ===== -->
+    <div class="card">
+        <div class="section-title">
+            <span class="num num-token">AI</span>
+            Chi phí Token AI
+            <em style="font-weight:400;font-size:0.82rem;color:var(--text-light)">(Chi phí vận hành – theo lượng dùng)</em>
+        </div>
+
+        <div class="alert important" style="margin-top:0;margin-bottom:20px">
+            <span class="alert-icon">⚠️</span>
+            <div><strong>Đây là chi phí biến đổi</strong> — phụ thuộc vào số lần phân tích và độ dài file. Người dùng tự trả bằng API key của họ (hiện tại), hoặc bạn trả thay nếu dùng mô hình SaaS.</div>
+        </div>
+
+        <table>
+            <thead>
+                <tr><th>Provider</th><th>Model</th><th>Input (audio/1min)</th><th>Output (1000 tokens)</th><th>Phân tích 1 cuộc họp 60 phút</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>💎 Google Gemini</strong></td>
+                    <td>gemini-2.5-flash</td>
+                    <td>~$0.004/min</td>
+                    <td>~$0.0015</td>
+                    <td>~<strong>$0.25–0.45</strong> (~6.000–11.000đ)</td>
+                </tr>
+                <tr>
+                    <td><strong>⚡ OpenAI</strong></td>
+                    <td>Whisper + GPT-4o</td>
+                    <td>$0.006/min (Whisper)</td>
+                    <td>$0.005 (GPT-4o)</td>
+                    <td>~<strong>$0.70–1.20</strong> (~17.000–30.000đ)</td>
+                </tr>
+                <tr>
+                    <td><strong>💎 Gemini Free Tier</strong></td>
+                    <td>gemini-2.5-flash</td>
+                    <td>Miễn phí (giới hạn RPM)</td>
+                    <td>Miễn phí</td>
+                    <td><strong>$0</strong> (nếu dùng AI Studio key)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="subheading" style="margin-top:24px">Chi phí theo kịch bản sử dụng (Gemini 2.5 Flash)</div>
+        <div class="token-scenarios">
+            <div class="token-sc light-use">
+                <div class="sc-label">🟢 Nhẹ</div>
+                <div class="sc-amount">~200.000đ</div>
+                <div class="sc-desc">10 cuộc họp/tháng<br>mỗi họp ~60 phút</div>
+            </div>
+            <div class="token-sc med-use">
+                <div class="sc-label">🟡 Trung bình</div>
+                <div class="sc-amount">~800.000đ</div>
+                <div class="sc-desc">40 cuộc họp/tháng<br>mỗi họp ~60 phút</div>
+            </div>
+            <div class="token-sc heavy-use">
+                <div class="sc-label">🔴 Nặng</div>
+                <div class="sc-amount">~2.000.000đ</div>
+                <div class="sc-desc">100 cuộc họp/tháng<br>mỗi họp ~90 phút</div>
+            </div>
+        </div>
+
+        <div class="alert tip" style="margin-top:20px">
+            <span class="alert-icon">💡</span>
+            <div><strong>Khuyến nghị:</strong> Dùng <strong>Gemini 2.5 Flash</strong> làm provider mặc định — rẻ hơn OpenAI 3–4x, có free tier, hỗ trợ audio native (không cần Whisper riêng). Đặc biệt phù hợp nếu muốn scale lên nhiều người dùng.</div>
+        </div>
+    </div>
+
+    <!-- ===== TỔNG HỢP ===== -->
+    <div class="card">
+        <div class="section-title">
+            <span class="num num-total">∑</span>
+            Tổng Hợp Chi phí Phát triển
+        </div>
+        <table>
+            <thead>
+                <tr><th>Hạng mục</th><th>Loại</th><th>VNĐ (chưa VAT)</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Frontend Development</strong></td>
+                    <td><span class="tag tag-fe">FE</span></td>
+                    <td>5.000.000</td>
+                </tr>
+                <tr>
+                    <td><strong>Backend & AI Integration</strong></td>
+                    <td><span class="tag tag-be">BE</span></td>
+                    <td>10.000.000</td>
+                </tr>
+                <tr>
+                    <td><strong>Design & UX</strong></td>
+                    <td><span class="tag tag-design">Design</span></td>
+                    <td>5.000.000</td>
+                </tr>
+                <tr>
+                    <td><strong>AI Token (ước tính vận hành/tháng)</strong></td>
+                    <td><span class="tag tag-token">Token</span></td>
+                    <td>200.000 – 2.000.000/tháng</td>
+                </tr>
+                <tr class="subtotal-row">
+                    <td colspan="2">📦 Tổng phát triển MVP (chưa VAT)</td>
+                    <td>20.000.000</td>
+                </tr>
+                <tr class="subtotal-row">
+                    <td colspan="2">📦 Tổng phát triển MVP (đã VAT 10%)</td>
+                    <td>22.000.000</td>
+                </tr>
+                <tr>
+                    <td><strong>Server hosting (server 84 – hiện tại)</strong></td>
+                    <td><span class="tag tag-be">Infra</span></td>
+                    <td>~300.000/tháng (chia sẻ)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="grand-total-box">
+            <div>
+                <div class="gt-label">💰 TỔNG CHI PHÍ PHÁT TRIỂN (MVP)</div>
+                <div class="gt-amount">20.000.000đ</div>
+                <div class="gt-sub">Chưa bao gồm VAT 10% &amp; chi phí AI Token vận hành</div>
+            </div>
+            <div class="gt-right">
+                <div class="gt-label">Thời gian phát triển ước tính</div>
+                <div class="gt-amount">3–4 tuần</div>
+                <div class="gt-sub">MVP đầy đủ tính năng</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SECTION: MONETIZATION ===== -->
+    <div class="card">
+        <div class="section-title">
+            <span class="num num-mono">💰</span>
+            Gợi ý Phương thức Thu phí
+        </div>
+
+        <div class="alert info" style="margin-top:0;margin-bottom:24px">
+            <span class="alert-icon">🎯</span>
+            <div>MeetingMind phù hợp với nhiều mô hình kinh doanh. Tôi đề xuất <strong>kết hợp mô hình 1 + 4</strong> để tối ưu doanh thu ngay từ đầu.</div>
+        </div>
+
+        <div class="mono-grid">
+            <div class="mono-card">
+                <div class="mono-badge badge-recommend">⭐ Khuyến nghị #1</div>
+                <h3>🎟️ Credit / Token-based</h3>
+                <p>Người dùng mua gói credit để phân tích. Mỗi phân tích tốn 1–5 credit tùy độ dài file. Không subscription, trả theo dùng.</p>
+                <div class="mono-price">
+                    VD: 50 credit = 99.000đ<br>
+                    (Mỗi credit ≈ bao gồm AI token + margin)
+                </div>
+            </div>
+
+            <div class="mono-card">
+                <div class="mono-badge badge-recommend">⭐ Khuyến nghị #4</div>
+                <h3>🏢 B2B – White-label / API</h3>
+                <p>Bán cho doanh nghiệp dùng nội bộ. Họ trả phí setup + monthly license. Có thể white-label với tên công ty họ.</p>
+                <div class="mono-price">
+                    Setup: 5–15tr/doanh nghiệp<br>
+                    Monthly: 3–8tr/tháng/team
+                </div>
+            </div>
+
+            <div class="mono-card">
+                <div class="mono-badge badge-passive">📦 Passive</div>
+                <h3>💎 Freemium + Subscription</h3>
+                <p>Free: 3 phân tích/tháng (giới hạn 30 phút/file). Trả phí: không giới hạn, ưu tiên xử lý, export thêm định dạng.</p>
+                <div class="mono-price">
+                    Free: 0đ<br>
+                    Pro: 199.000đ/tháng<br>
+                    Team: 499.000đ/tháng (5 users)
+                </div>
+            </div>
+
+            <div class="mono-card">
+                <div class="mono-badge badge-addon">🔌 Add-on</div>
+                <h3>🔑 BYOK (Bring Your Own Key)</h3>
+                <p>Người dùng dùng API key của họ → miễn phí app, chỉ trả phí platform nhỏ. Phù hợp dev/startup muốn kiểm soát chi phí.</p>
+                <div class="mono-price">
+                    Platform fee: 29.000–49.000đ/tháng<br>
+                    (Hoặc miễn phí hoàn toàn để viral)
+                </div>
+            </div>
+
+            <div class="mono-card">
+                <div class="mono-badge badge-b2b">🏗️ Project</div>
+                <h3>📋 Tích hợp theo dự án</h3>
+                <p>Tích hợp MeetingMind vào phần mềm quản lý dự án khác (Jira, Notion, Slack). Bán dưới dạng plugin/integration có phí.</p>
+                <div class="mono-price">
+                    Phí tích hợp: 10–30tr/lần<br>
+                    Maintenance: 2–5tr/tháng
+                </div>
+            </div>
+
+            <div class="mono-card">
+                <div class="mono-badge badge-passive">📦 Passive</div>
+                <h3>📊 Enterprise Reporting</h3>
+                <p>Gói doanh nghiệp lớn: dashboard team, thống kê cuộc họp toàn công ty, compliance recording, audit trail.</p>
+                <div class="mono-price">
+                    Enterprise: 2.000.000đ/tháng<br>
+                    (Cần backend thật + auth)
+                </div>
+            </div>
+        </div>
+
+        <div class="subheading" style="margin-top:28px">Lộ trình Monetization đề xuất</div>
+        <table>
+            <thead>
+                <tr><th>Giai đoạn</th><th>Mô hình</th><th>Mục tiêu</th><th>Doanh thu ước tính</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Phase 1</strong> (0–3 tháng)</td>
+                    <td>BYOK miễn phí + Credit thử nghiệm</td>
+                    <td>Thu thập user, feedback, viral</td>
+                    <td>0 – 5.000.000đ/tháng</td>
+                </tr>
+                <tr>
+                    <td><strong>Phase 2</strong> (3–6 tháng)</td>
+                    <td>Freemium + Credit packages</td>
+                    <td>Chuyển đổi free → paid</td>
+                    <td>5 – 20.000.000đ/tháng</td>
+                </tr>
+                <tr>
+                    <td><strong>Phase 3</strong> (6–12 tháng)</td>
+                    <td>B2B + White-label</td>
+                    <td>Doanh thu ổn định từ doanh nghiệp</td>
+                    <td>20 – 80.000.000đ/tháng</td>
+                </tr>
+                <tr class="subtotal-row">
+                    <td colspan="3">🎯 Break-even ước tính (hoàn vốn 20tr)</td>
+                    <td>Tháng 1–2 (Phase 1–2)</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ===== NEXT STEPS ===== -->
+    <div class="card">
+        <div class="section-title">
+            <span class="num num-next">→</span>
+            Next Steps
+        </div>
+        <div class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-body">
+                <strong>Xác nhận mô hình monetization ưu tiên</strong>
+                <span>Chọn 1–2 mô hình chính để thiết kế UI phù hợp (credit counter, subscription gate, v.v.)</span>
+                <div><span class="step-badge">Tuần 1</span></div>
+            </div>
+        </div>
+        <div class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-body">
+                <strong>Thêm Backend thật (nếu cần SaaS)</strong>
+                <span>Node.js + PostgreSQL: user auth, API key quản lý tập trung, usage tracking, billing Stripe/VNPay</span>
+                <div><span class="step-badge">Tuần 2–4</span></div>
+            </div>
+        </div>
+        <div class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-body">
+                <strong>Domain & HTTPS</strong>
+                <span>Mua domain meetingmind.vn hoặc tương tự (~500k/năm). Cấu hình SSL + nginx reverse proxy</span>
+                <div><span class="step-badge">Tuần 1</span></div>
+            </div>
+        </div>
+        <div class="step-item">
+            <div class="step-num">4</div>
+            <div class="step-body">
+                <strong>Beta Testing với 5–10 khách hàng thật</strong>
+                <span>Mời PM/Leader thử phân tích file ghi âm họp thật. Thu thập feedback về accuracy, UX, và willingness to pay</span>
+                <div><span class="step-badge">Tuần 2–3</span></div>
+            </div>
+        </div>
+        <div class="step-item">
+            <div class="step-num">5</div>
+            <div class="step-body">
+                <strong>Marketing & Launch</strong>
+                <span>LinkedIn/Facebook post demo video, ProductHunt launch (EN), cộng đồng PM Việt Nam</span>
+                <div><span class="step-badge">Tuần 4–6</span></div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p><span class="flexi-logo">FLEXI · AG TEAM</span></p>
+        <p style="margin-top:8px">Tài liệu báo giá MeetingMind · Tháng 3/2026 · Dự toán sơ bộ, có thể điều chỉnh sau thảo luận chi tiết</p>
+        <p style="margin-top:4px">Deploy: <a href="http://27.71.23.84:8092" target="_blank" style="color:var(--accent)">http://27.71.23.84:8092</a></p>
+    </footer>
+
+</div>
+
+<script>
+function toggleTheme(){
+    const h=document.documentElement;
+    const isDark=h.getAttribute('data-theme')==='dark';
+    h.setAttribute('data-theme',isDark?'light':'dark');
+    document.getElementById('themeIcon').textContent=isDark?'☀️':'🌙';
+    document.getElementById('themeLabel').textContent=isDark?'Light':'Dark';
+}
+</script>
+</body>
+</html>

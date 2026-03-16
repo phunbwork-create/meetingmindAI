@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MeetingMind – Phân Tích Hội Thoại AI</title>
+  <meta name="description" content="Phân tích cuộc họp thông minh: nhận dạng người nói, phân loại chủ đề, tóm tắt dự án và gợi ý hành động tiếp theo bằng AI." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- API Key Modal -->
+  <div id="apiKeyModal" class="modal-overlay active">
+    <div class="modal-box">
+      <div class="modal-icon">🔑</div>
+      <h2>Cài Đặt AI Provider</h2>
+      <p>Chọn AI provider và nhập API Key. Key lưu trên trình duyệt, không gửi về server nào.</p>
+
+      <!-- Provider Toggle -->
+      <div class="provider-tabs">
+        <button class="provider-tab active" id="providerOpenAI" data-provider="openai">
+          <span class="provider-logo">⚡</span> OpenAI
+        </button>
+        <button class="provider-tab" id="providerGemini" data-provider="gemini">
+          <span class="provider-logo">💎</span> Google Gemini
+        </button>
+      </div>
+
+      <div id="providerHint" class="provider-hint">
+        Whisper + GPT-4o · <a href="https://platform.openai.com/api-keys" target="_blank">Lấy key →</a>
+      </div>
+
+      <div class="modal-input-group">
+        <input type="password" id="apiKeyInput" placeholder="sk-..." autocomplete="off" />
+        <button id="toggleApiKey" class="btn-icon" title="Hiện/Ẩn">👁️</button>
+      </div>
+      <div class="modal-actions">
+        <button id="saveApiKey" class="btn-primary">Lưu &amp; Tiếp Tục</button>
+        <button id="skipApiKey" class="btn-ghost">Dùng Demo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-brand">
+      <div class="brand-icon">🧠</div>
+      <div>
+        <h1 class="brand-name">MeetingMind</h1>
+        <span class="brand-tagline">Phân tích hội thoại thông minh</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div id="apiStatus" class="api-badge demo">
+        <span class="api-dot"></span>
+        <span id="apiStatusText">Demo Mode</span>
+      </div>
+      <button id="settingsBtn" class="btn-icon-header" title="Cài đặt">⚙️</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- LEFT Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-inner">
+        <div class="input-section">
+          <h2 class="section-title">📥 Nhập Nội Dung</h2>
+
+          <div class="input-tabs">
+            <button class="input-tab active" data-tab="text">✏️ Văn Bản</button>
+            <button class="input-tab" data-tab="voice">🎙️ Giọng Nói</button>
+            <button class="input-tab" data-tab="file">📁 File</button>
+          </div>
+
+          <!-- Text Mode -->
+          <div id="modeText" class="input-mode active">
+            <textarea id="textInput" class="transcript-textarea" placeholder="Dán transcript hoặc nội dung cuộc họp vào đây...&#10;&#10;Ví dụ:&#10;[00:00] John: Chào mọi người...&#10;[00:30] Mary: Hôm nay chúng ta..." rows="10"></textarea>
+            <div class="lang-select-row">
+              <label>Ngôn ngữ:</label>
+              <select id="textLang">
+                <option value="vi">🇻🇳 Tiếng Việt</option>
+                <option value="en">🇺🇸 English</option>
+                <option value="auto">🌐 Tự động</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Voice Mode -->
+          <div id="modeVoice" class="input-mode">
+            <div class="voice-area">
+              <button id="voiceBtn" class="voice-btn">
+                <span class="voice-icon">🎙️</span>
+                <span class="voice-label">Nhấn để nói</span>
+              </button>
+              <div class="voice-status" id="voiceStatus">Sẵn sàng</div>
+              <div class="voice-waveform" id="voiceWaveform">
+                <span></span><span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+            </div>
+            <div class="voice-transcript-box">
+              <div class="vtb-label">Transcript:</div>
+              <div id="voiceTranscript" class="voice-transcript-content" contenteditable="true">Transcript sẽ xuất hiện ở đây...</div>
+            </div>
+            <div class="lang-select-row">
+              <label>Ngôn ngữ:</label>
+              <select id="voiceLang">
+                <option value="vi-VN">🇻🇳 Tiếng Việt</option>
+                <option value="en-US">🇺🇸 English</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- File Mode -->
+          <div id="modeFile" class="input-mode">
+            <div class="file-drop-zone" id="fileDropZone">
+              <div class="file-drop-icon">🎵</div>
+              <div class="file-drop-title">Kéo thả hoặc chọn file</div>
+              <div class="file-drop-sub">Audio: .mp3, .mp4, .m4a, .wav, .webm, .ogg<br/>Text: .txt, .srt, .md</div>
+              <input type="file" id="fileInput" accept=".mp3,.mp4,.m4a,.wav,.webm,.ogg,.txt,.srt,.md" style="display:none" />
+              <button class="btn-outline" id="browseFileBtn">Chọn File</button>
+            </div>
+            <div id="fileInfo" class="file-info hidden">
+              <div class="file-info-icon">📄</div>
+              <div class="file-info-details">
+                <div id="fileName" class="file-info-name"></div>
+                <div id="fileSize" class="file-info-size"></div>
+              </div>
+              <button id="removeFile" class="btn-icon-sm">❌</button>
+            </div>
+            <div id="transcribeProgress" class="progress-bar-wrapper hidden">
+              <div class="progress-label" id="progressLabel">Đang transcribe...</div>
+              <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+            </div>
+            <div class="lang-select-row">
+              <label>Ngôn ngữ audio:</label>
+              <select id="fileLang">
+                <option value="vi">🇻🇳 Tiếng Việt</option>
+                <option value="en">🇺🇸 English</option>
+                <option value="auto">🌐 Tự động</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="context-section">
+            <label class="context-label">📝 Ngữ cảnh (tuỳ chọn):</label>
+            <input type="text" id="contextInput" class="context-input" placeholder="VD: Họp sprint planning dự án XYZ, Q1 2026..." />
+          </div>
+
+          <button id="analyzeBtn" class="btn-analyze">
+            <span id="analyzeBtnText">🚀 Phân Tích Ngay</span>
+            <div id="analyzeBtnLoader" class="btn-loader hidden"></div>
+          </button>
+
+          <button id="demoBtn" class="btn-demo">🎯 Thử với transcript mẫu</button>
+        </div>
+
+        <div class="history-section">
+          <div class="history-header">
+            <h3 class="history-title">🗂️ Lịch sử</h3>
+            <button id="clearHistoryBtn" class="btn-clear">Xoá</button>
+          </div>
+          <div id="historyList" class="history-list">
+            <div class="history-empty">Chưa có phân tích nào</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- RIGHT Results Panel -->
+    <main class="main-panel">
+      <div id="emptyState" class="empty-state">
+        <div class="empty-icon">🎙️</div>
+        <h2>Sẵn sàng phân tích cuộc họp của bạn</h2>
+        <p>Nhập transcript, ghi âm giọng nói, hoặc upload file audio để bắt đầu phân tích thông minh.</p>
+        <div class="feature-grid">
+          <div class="feature-card"><span>👤</span><span>Nhận dạng người nói</span></div>
+          <div class="feature-card"><span>🏷️</span><span>Phân loại chủ đề</span></div>
+          <div class="feature-card"><span>📋</span><span>Tóm tắt PM</span></div>
+          <div class="feature-card"><span>✅</span><span>Gợi ý hành động</span></div>
+        </div>
+      </div>
+
+      <div id="resultsPanel" class="results-panel hidden">
+        <div class="result-meta">
+          <div class="result-meta-title" id="resultTitle">Phân tích cuộc họp</div>
+          <div class="result-meta-info">
+            <span id="resultDate"></span>
+            <span>•</span>
+            <span id="resultDuration"></span>
+            <span>•</span>
+            <span id="resultSpeakers"></span>
+          </div>
+          <div class="result-actions-bar">
+            <button id="copyResultBtn" class="btn-sm">📋 Copy</button>
+            <button id="exportMdBtn" class="btn-sm">📤 Export .md</button>
+            <button id="exportPdfBtn" class="btn-sm">🖨️ In / PDF</button>
+          </div>
+        </div>
+
+        <div class="result-tabs">
+          <button class="result-tab active" data-panel="speakers">👤 Người Nói</button>
+          <button class="result-tab" data-panel="topics">🏷️ Chủ Đề</button>
+          <button class="result-tab" data-panel="summary">📋 Tóm Tắt PM</button>
+          <button class="result-tab" data-panel="actions">✅ Hành Động</button>
+        </div>
+
+        <div id="panelSpeakers" class="result-content active"><div id="speakersList"></div></div>
+        <div id="panelTopics" class="result-content"><div id="topicsList"></div></div>
+        <div id="panelSummary" class="result-content"><div id="summaryContent"></div></div>
+        <div id="panelActions" class="result-content"><div id="actionsList"></div></div>
+      </div>
+
+      <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-card">
+          <div class="loading-spinner"></div>
+          <div class="loading-step" id="loadingStep">Đang xử lý...</div>
+          <div class="loading-substep" id="loadingSubstep"></div>
+          <div class="loading-progress">
+            <div class="loading-bar"><div class="loading-fill" id="loadingFill" style="width:0%"></div></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="app-bundle.js"></script>
+</body>
+</html>
